@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<style>
+		body{
+			background-color: #fff
+		}
+		.aui-content{
+			position: absolute;
+			top: 40px;
+		}
+	</style>
+</head>
+<body>
+	<div class="aui-content aui-card">       
+        <div class="aui-form">
+            <div class="aui-input-row">
+                <i class="aui-input-addon aui-iconfont aui-icon-people aui-text-info"></i>
+                <input type="number" class="aui-input" placeholder="请输入手机号码" id="phone"/>
+            </div>
+            <div class="aui-input-row">
+                <input type="number" class="aui-input" id="code" placeholder="请输入收到的验证码"/>
+                <span class="aui-input-addon">
+                    <input type="button" id="obt" class="aui-btn aui-btn-info" tapmode onclick="obtViofy(this)" value="获取验证码"/>
+                </span>
+            </div>
+            
+            <div class="aui-btn-row">
+                <input type="button" class="aui-btn aui-btn-block aui-btn-info" tapmode onclick="submit()" value="提交"/>
+            </div>
+        </div>
+    </div>    
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+	var sms;
+	var countdown=60;
+    apiready = function(){
+		init();
+    };
+    function init()
+    {
+    	sms = api.require('foryouSMS');
+    	sms.init({
+    		appkey:'ae1c21f27cfe',
+    		appsecret:'0f512a626c51480fb69d0b9d43f939a9'
+    	});
+    }
+    function obtViofy(obj)
+    {
+    	obtainTime(obj);
+    	sms.sendSMS({
+    		phone:$api.val($api.byId('phone'))
+    	},function(ret,err){
+   			if(ret.status)
+    		{ 
+    			alert($api.jsonToStr(ret));
+    		}else{
+    			alert(err.code);
+    		}    		
+    	});
+    }
+	/**
+	 * 验证码获取按钮倒计时控制器
+	 * val：按钮 dom对象
+	 * author:王健 
+	 */
+	function obtainTime(val){
+			if (countdown == 0) { 
+				val.removeAttribute("disabled");    
+				val.value="获取验证码"; 
+				countdown = 60; 
+			} else { 
+				val.setAttribute("disabled", true); 
+				val.value= countdown + "秒后重发"; 
+				countdown--;
+				setTimeout(function() { 
+					obtainTime(val) 
+				},1000);
+			} 
+	}    
+    function submit()
+    {
+    	sms.enterCode({
+    		phone:$api.val($api.byId('phone')),
+    		code:$api.val($api.byId('code'))
+    	},function(ret,err){
+    		if(ret.status)
+    		{
+    			alert('验证码正确');
+    		}else{
+    			alert(err.code);
+    		}
+    	});
+    }    
+</script>
+</html>

@@ -1,0 +1,5 @@
+{
+ "name":"foryouSMS",
+ "class":"UZSMS",
+ "methods":["init","sendSMS","enterCode"]
+ }
